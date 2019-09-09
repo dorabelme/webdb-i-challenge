@@ -15,7 +15,8 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     db("accounts")
-        .where({id: req.params.id})
+        .where({ id: req.params.id })
+        .first()
         .then(account => {
             console.log(account);
             if (account) {
@@ -40,9 +41,10 @@ router.post('/', (req, res) => {
     }
     db("accounts")
         .insert({ name: req.body.name, budget: req.body.budget })
-        .then(({ id }) => {
+        .then(([id]) => {
             db("accounts")
-                .where({ id: req.params.id })
+                .where({ id })
+                .first()
                 .then(account => {
                     console.log(account);
                     if (account) {
@@ -90,13 +92,14 @@ router.put('/:id', (req, res) => {
     }
     
     db("accounts")
-        .where({id: req.params.id})
-        .insert({ name: req.body.name, budget: req.body.budget })
+        .where({ id: req.params.id })
+        .update({ name: req.body.name, budget: req.body.budget })
         .then(updated => {
             console.log(updated);
             if (updated) {
                 db("accounts")
                     .where({ id: req.params.id })
+                    .first()
                     .then(account => res.status(200).json(account))
                     .catch(err => {
                         console.log(err);
