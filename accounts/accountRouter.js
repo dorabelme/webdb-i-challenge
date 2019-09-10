@@ -49,8 +49,6 @@ router.post('/', (req, res) => {
     Account.insert({name: req.body.name, budget: req.body.budget})
     // db("accounts")
     //     .insert({ name: req.body.name, budget: req.body.budget })
-        .then(({id}) => {
-            Account.getById(id)
             // db("accounts")
             //     .where({ id })
             //     .first()
@@ -65,7 +63,6 @@ router.post('/', (req, res) => {
                 .catch(err => {
                     console.log(err);
                     res.status(500).json({ error: "Server error retrieving account."});
-                });
         })
         .catch(err => {
             console.log(err);
