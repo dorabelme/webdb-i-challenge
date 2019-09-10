@@ -1,11 +1,15 @@
 const express = require("express");
-const db = require("../data/dbConfig.js");
+// const db = require("../data/dbConfig.js");
+
+const Account = require("../data/dbHelpers.js");
+
 
 const router = express.Router();
 
 // GET requests for projects
 router.get('/', (req, res) => {
-    db("accounts")
+    Account.get()
+    // db("accounts")
         .then(accounts => res.status(200).json(accounts))
         .catch(err => {
             console.log(err);
@@ -14,9 +18,11 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-    db("accounts")
-        .where({ id: req.params.id })
-        .first()
+    const { id } = req.params;
+    Account.getById(id)
+    // db("accounts")
+    //     .where({ id: req.params.id })
+    //     .first()
         .then(account => {
             console.log(account);
             if (account) {
@@ -39,12 +45,15 @@ router.post('/', (req, res) => {
     if (!req.body.name || !req.body.budget) {
         return res.status(400).json({ error: "Requires name and budget."});
     }
-    db("accounts")
-        .insert({ name: req.body.name, budget: req.body.budget })
-        .then(([id]) => {
-            db("accounts")
-                .where({ id })
-                .first()
+
+    Account.insert({name: req.body.name, budget: req.body.budget})
+    // db("accounts")
+    //     .insert({ name: req.body.name, budget: req.body.budget })
+        .then(({id}) => {
+            Account.getById(id)
+            // db("accounts")
+            //     .where({ id })
+            //     .first()
                 .then(account => {
                     console.log(account);
                     if (account) {
@@ -67,9 +76,11 @@ router.post('/', (req, res) => {
 
 // DELETE request for projects
 router.delete('/:id', (req, res) => {
-    db("accounts")
-        .where({ id: req.params.id })
-        .del()
+    const { id } = req.params;
+    Account.remove(id)
+    // db("accounts")
+    //     .where({ id: req.params.id })
+    //     .del()
         .then(account => {
             console.log(account);
             if (account) {
@@ -87,19 +98,22 @@ router.delete('/:id', (req, res) => {
 
 // PUT request for projects
 router.put('/:id', (req, res) => {
+    const { id } = req.params;
     if (!req.body.name || !req.body.budget) {
         return res.status(400).json({ error: "Requires name and budget." });
     }
     
-    db("accounts")
-        .where({ id: req.params.id })
-        .update({ name: req.body.name, budget: req.body.budget })
+    Account.update(id, {name: req.body.name, budget: req.body.budget})
+    // db("accounts")
+    //     .where({ id: req.params.id })
+    //     .update({ name: req.body.name, budget: req.body.budget })
         .then(updated => {
             console.log(updated);
             if (updated) {
-                db("accounts")
-                    .where({ id: req.params.id })
-                    .first()
+                Account.getById(id)
+                // db("accounts")
+                //     .where({ id: req.params.id })
+                //     .first()
                     .then(account => res.status(200).json(account))
                     .catch(err => {
                         console.log(err);
